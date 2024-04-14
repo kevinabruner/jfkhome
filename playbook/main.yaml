@@ -37,15 +37,7 @@
         groups: www-data
         append: yes
       become: yes
-        
-    - name: Clone the repository 
-      git:
-        repo: "{{ GIT_REPO }}"
-        dest: "{{ git_dir }}"
-        clone: yes
-        force: true        
-        version: "main"
-      become_user: kevin                   
+                       
 
     - name: Enable apache2 service
       systemd:
@@ -59,7 +51,7 @@
         state: restarted
       become: yes        
 
-    - name: Sync files from github directory to web
+    - name: Sync files from html directory to web
       ansible.builtin.synchronize:
         src: "{{ git_dir }}/html/"
         dest: "{{ web_dir }}/"
