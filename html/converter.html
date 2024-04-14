@@ -1,0 +1,146 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script type="text/javascript">
+    
+function convertingComments() {
+    var commentNum; var commentText; var nameText; var cityText; var finalComment;
+    var engMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var fraMonths = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", 
+    "novembre", "décembre"];
+    var frenchDate; var englishDate;
+    
+    commentNum = document.getElementById('commentNumber').value;
+    commentText = document.getElementById('mailText').value;
+        
+    var today = new Date();
+    englishDate = engMonths[today.getMonth()] + ' ' + today.getDate() + ', ' + today.getFullYear(); 
+    frenchDate = 'Le ' + today.getDate() + ' ' + fraMonths[today.getMonth()] + ' ' + today.getFullYear();
+    
+    
+    if (commentNum == '')
+	{
+		document.getElementById('commentNumber').value=1;
+		commentNum = 1;
+	} 
+    
+	document.getElementById('engHTML').textContent='';
+	document.getElementById('fraHTML').textContent='';
+	
+	divString = 'Name:   ';
+	stringPart = commentText.slice(commentText.indexOf(divString) + divString.length, commentText.length); 
+	nameText = stringPart.slice(0, stringPart.indexOf(';'));			
+
+	divString = 'Location:   ';
+	stringPart = commentText.slice(commentText.indexOf(divString) + divString.length, commentText.length); 
+	cityText = stringPart.slice(0, stringPart.indexOf(';'));			
+
+	divString = 'Comment:   ';
+	stringPart = commentText.slice(commentText.indexOf(divString) + divString.length, commentText.length); 
+	finalComment = stringPart.slice(0, stringPart.lastIndexOf(';'));			    
+	
+	finalComment = finalComment.replace(/(?:\r\n|\r|\n)/g, '<br />');
+
+	document.getElementById('engHTML').textContent='<hr /><div id="c' + commentNum + '" class="comment_cl">' +          String.fromCharCode(13) + '<p><b><i class="fa fa-user"></i></b>' + String.fromCharCode(13) + nameText + ' (' + cityText +')' + String.fromCharCode(13) + '<br /><b><i class="fa fa-calendar"></i></b>' + String.fromCharCode(13) + englishDate + String.fromCharCode(13) + '<br /><b><i class="fa fa-comment"></i></b>' + String.fromCharCode(13) + finalComment + String.fromCharCode(13) + '</p></div>';
+	
+	document.getElementById('engPreview').innerHTML='<hr /><div id="c' + commentNum + '" class="comment_cl">' +          String.fromCharCode(13) + '<p><b><i class="fa fa-user"></i></b>' + String.fromCharCode(13) + nameText + ' (' + cityText +')' + String.fromCharCode(13) + '<br /><b><i class="fa fa-calendar"></i></b>' + String.fromCharCode(13) + englishDate + String.fromCharCode(13) + '<br /><b><i class="fa fa-comment"></i></b>' + String.fromCharCode(13) + finalComment + String.fromCharCode(13) + '</p></div>';
+				
+	document.getElementById('fraHTML').textContent='<hr /><div id="c' + commentNum + '" class="comment_cl">' +          String.fromCharCode(13) + '<p><b><i class="fa fa-user"></i></b>' + String.fromCharCode(13) + nameText + ' (' + cityText +')' + String.fromCharCode(13) + '<br /><b><i class="fa fa-calendar"></i></b>' + String.fromCharCode(13) + frenchDate + String.fromCharCode(13) + '<br /><b><i class="fa fa-comment"></i></b>' + String.fromCharCode(13) + finalComment + String.fromCharCode(13) + '</p></div>';
+	
+	document.getElementById('fraPreview').innerHTML='<hr /><div id="c' + commentNum + '" class="comment_cl">' +          String.fromCharCode(13) + '<p><b><i class="fa fa-user"></i></b>' + String.fromCharCode(13) + nameText + ' (' + cityText +')' + String.fromCharCode(13) + '<br /><b><i class="fa fa-calendar"></i></b>' + String.fromCharCode(13) + frenchDate + String.fromCharCode(13) + '<br /><b><i class="fa fa-comment"></i></b>' + String.fromCharCode(13) + finalComment + String.fromCharCode(13) + '</p></div>';  
+
+}
+function checkConvert()
+{
+    if (document.getElementById('mailText').value != '' && document.getElementById('commentNumber').value != '') convertingComments();
+        
+}
+</script>
+<style>
+    body {
+        background-color:lightgrey;
+    }
+    .mainbody{
+        padding:20px;
+        
+    }
+    h1 {
+        text-align:center;
+        margin-bottom: 40px
+    }
+    .fa{
+        margin-right:8px;
+    }
+    
+    .inputboxes{
+        display:block;
+        width:450px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top:15px
+    
+    }
+    .previewbox{
+        min-height:350px;
+        width:360px;
+        border-style:solid;
+        border-width:1px;
+        border-color:#b3b3b3;
+        background-color:#fff;
+        padding:30px;
+    }
+    
+    hr{
+        display:none;
+    }
+    
+    .input{
+        background-color:#f2f2f2;
+    }
+</style>    
+</head>
+<body>
+<div class="mainbody">
+    <h1>Comment Converter Tool</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="inputboxes">
+                Comment Number:<br />
+                <input oninput="checkConvert()" type="number" id="commentNumber"> <br />
+                Email text:<br />
+                <textarea oninput="convertingComments()" id="mailText" cols="50" rows="20"></textarea>
+                <br /><br />
+            
+            </div>    
+        </div>
+            <div class="col-md-8">
+                <div class="col-md-6">    
+                    <div>
+                        <h4>English Preview:</h4>
+                        <div class="previewbox" id="engPreview" ></div>
+                    </div>
+                    <div>
+                        <h4>French Preview:</h4>
+                        <div class="previewbox" id="fraPreview" ></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div>
+                        <h4>English HTML:</h4>
+                        <textarea id="engHTML" cols="50" rows="20"></textarea><br />
+                    </div>                                    
+                    
+                    <div>
+                        <h4>French HTML:</h4>
+                        <textarea id="fraHTML" cols="50" rows="20"></textarea><br />
+                    </div>
+                </div>
+                
+            </div>        
+                        
+        
+    </div>
+</div>
+</body>
+</html>
