@@ -1,0 +1,6 @@
+APPLICATION: jfkhome
+ANSIBLE_USER: kevin
+GIT_REPO: https://github.com/kevinabruner/{{ APPLICATION }}.git
+git_dir: /home/{{ ANSIBLE_USER }}/{{ APPLICATION }}
+netbox_dns: netbox.thejfk.ca
+web_dir: /var/www/html

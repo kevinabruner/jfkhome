@@ -1,0 +1,74 @@
+- name: Build 
+  hosts: jfkhome
+  vars_files:
+    - vars.yaml
+  tasks:                
+    - name: Install apt packages
+      apt:  
+        update_cache: yes
+        name: "{{ item }}"
+      loop:
+        - apache2
+        - php
+        - php-curl
+        - php-gd
+        - php-imagick
+        - ncdu        
+        - vim
+        - htop       
+        - nfs-common 
+      become: true
+
+    - name: Ensure user kevin exists
+      user:
+        name: kevin
+        state: present
+      become: yes
+
+    - name: Ensure group www-data exists
+      group:
+        name: www-data
+        state: present
+      become: yes
+
+    - name: Add user kevin to group www-data
+      user:
+        name: kevin
+        groups: www-data
+        append: yes
+      become: yes
+        
+    - name: Clone the repository 
+      git:
+        repo: "{{ GIT_REPO }}"
+        dest: "{{ git_dir }}"
+        clone: yes
+        force: true        
+        version: "main"
+      become_user: kevin                   
+
+    - name: Enable apache2 service
+      systemd:
+        name: apache2
+        enabled: yes
+      become: true                    
+    
+    - name: Restart apache
+      service:
+        name: apache2
+        state: restarted
+      become: yes        
+
+    - name: Sync files from github directory to web
+      ansible.builtin.synchronize:
+        src: "{{ git_dir }}/html/"
+        dest: "{{ web_dir }}/"
+        delete: false
+        recursive: true
+      become: yes    
+
+    - name: Delete /var/www/html/index.html
+      ansible.builtin.file:
+        path: /var/www/html/index.html
+        state: absent
+      become: yes
