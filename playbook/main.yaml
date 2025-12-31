@@ -1,5 +1,5 @@
 - name: Build 
-  hosts: jfkhome
+  hosts: repo_jfkhome
   vars_files:
     - vars.yaml
   tasks:                
