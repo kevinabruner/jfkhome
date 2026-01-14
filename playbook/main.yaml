@@ -57,7 +57,7 @@
       become: yes
 
     - name: Generate service list from services directory (in reverse proxy repo)
-      import_tasks: /home/kevin/reverse_proxy/tasks/generate_services.yaml
+      import_tasks: /home/kevin/reverse-proxy/tasks/generate_services.yaml
 
     - name: Generate services html page on jfkhome servers (in reverse proxy repo)
-      import_tasks: /home/kevin/reverse_proxy/tasks/generate_site.yaml
+      import_tasks: /home/kevin/reverse-proxy/tasks/generate_site.yaml
