@@ -1,3 +1,6 @@
+{# Define scope #}
+{%- set scope = 'external' if env == 'prod' else 'internal' -%}
+
 <?php
 // PHP logic to fetch HAProxy stats server-side
 // The URL is passed in via Ansible variables
