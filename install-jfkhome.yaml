@@ -1,14 +1,13 @@
 - name: Build 
   hosts: repo_jfkhome
   become: true
-  vars_files:
-    - vars.yaml
   tasks:                
     - name: Install apt packages
       apt:  
         update_cache: yes
         name: "{{ item }}"
       loop:
+        - php
         - apache2
         - ncdu        
         - vim
@@ -41,8 +40,3 @@
         path: /var/www/html/index.html
         state: absent      
 
-    - name: Generate service list from services directory (in reverse proxy repo)
-      include_tasks: /home/kevin/reverse-proxy/tasks/generate_services.yaml
-
-    - name: Generate services html page on jfkhome servers (in reverse proxy repo)
-      include_tasks: /home/kevin/reverse-proxy/tasks/generate_site.yaml

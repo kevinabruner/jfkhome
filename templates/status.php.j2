@@ -1,0 +1,34 @@
+<?php
+
+$stats_url = "{{ proxy_stats_url }}";
+$stats_json = @file_get_contents($stats_url);
+$stats = $stats_json ? json_decode($stats_json, true) : [];
+
+function get_backend_status($svc_name, $all_stats) {
+    // We expect the backend in HAProxy to be named svc_name_backend
+    $target_px = $svc_name . "_backend";
+
+    // Loop through each "row" in the HAProxy output
+    foreach ($all_stats as $row) {
+        $current_px = "";
+        $current_sv = "";
+        $current_status = "";
+
+        // Each row is an array of field objects
+        foreach ($row as $field_obj) {
+            $fieldName = $field_obj['field']['name'];
+            $val = $field_obj['value']['value'];
+
+            if ($fieldName === 'pxname') $current_px = $val;
+            if ($fieldName === 'svname') $current_sv = $val;
+            if ($fieldName === 'status') $current_status = $val;
+        }
+
+        // Check if this row is the BACKEND for our target service
+        if ($current_px === $target_px && $current_sv === 'BACKEND') {
+            return strtolower($current_status); // e.g., 'up', 'down', 'maint'
+        }
+    }
+    return 'unknown';
+}
+?>
