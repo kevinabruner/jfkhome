@@ -20,42 +20,31 @@
         - nfs-common 
       become: true
 
-    - name: Ensure user kevin exists
-      user:
-        name: kevin
-        state: present
-      
-
-    - name: Ensure group www-data exists
+    - name: Ensure groups exist
       group:
-        name: www-data
+        name: "{{ item }}"
         state: present
-      
+      loop:
+        - www-data
 
-    - name: Add user kevin to group www-data
+    - name: Manage user kevin and group memberships
       user:
         name: kevin
+        state: present
         groups: www-data
-        append: yes
-      
+        append: yes    
                        
-    - name: Enable apache2 service
-      systemd:
-        name: apache2
-        enabled: yes
-      become: true                    
-    
-    - name: Restart apache
+    - name: Manage Apache2 Service
+      become: true
       service:
         name: apache2
         state: restarted
-              
+        enabled: yes
 
     - name: Delete /var/www/html/index.html
       ansible.builtin.file:
         path: /var/www/html/index.html
-        state: absent
-      
+        state: absent      
 
     - name: Generate service list from services directory (in reverse proxy repo)
       include_tasks: /home/kevin/reverse-proxy/tasks/generate_services.yaml
