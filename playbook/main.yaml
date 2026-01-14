@@ -9,6 +9,7 @@
         update_cache: yes
         name: "{{ item }}"
       loop:
+        - php
         - apache2
         - ncdu        
         - vim
