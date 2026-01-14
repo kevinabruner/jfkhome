@@ -1,5 +1,20 @@
-{# Define scope #}
-{%- set scope = 'external' if env == 'prod' else 'internal' -%}
+<?php
+// PHP logic to fetch HAProxy stats server-side
+// The URL is passed in via Ansible variables
+$stats_url = "{{ proxy_stats_url }}";
+$stats_json = @file_get_contents($stats_url);
+$stats = $stats_json ? json_decode($stats_json, true) : [];
+
+function get_backend_status($name, $all_stats) {
+    $target = $name . "_backend";
+    foreach ($all_stats as $s) {
+        if ($s['pxname'] === $target && $s['svname'] === 'BACKEND') {
+            return strtolower($s['status']); // Returns 'up', 'down', 'maint'
+        }
+    }
+    return 'unknown';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,37 +24,56 @@
         body { font-family: sans-serif; line-height: 1.6; padding: 20px; background: #f4f4f4; }
         .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         h1 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .service-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Service Card Styles */
+        .service-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; position: relative; }
         .service-name { font-weight: bold; font-size: 1.2em; color: #0056b3; }
-        .btn { text-decoration: none; background: #0056b3; color: white; padding: 8px 15px; border-radius: 4px; font-size: 0.9em; }
+        .desc { font-size: 0.9em; color: #666; flex: 1; margin: 0 20px; }
+        
+        /* Status Dot Styles */
+        .status-dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; border: 1px solid rgba(0,0,0,0.1); }
+        .status-up { background-color: #2ecc71; box-shadow: 0 0 5px #2ecc71; }
+        .status-down { background-color: #e74c3c; box-shadow: 0 0 5px #e74c3c; }
+        .status-maint { background-color: #f1c40f; }
+        .status-unknown { background-color: #95a5a6; }
+
+        /* Button and Tags */
+        .btn { text-decoration: none; background: #0056b3; color: white; padding: 8px 15px; border-radius: 4px; font-size: 0.9em; white-space: nowrap; }
         .btn:hover { background: #004494; }
-        .tag { font-size: 0.7em; background: #e0e0e0; padding: 2px 6px; border-radius: 10px; text-transform: uppercase; }
-        .tag_internal{ background: #b6ffa2ff}
-        .tag_external{ background: #ff8686ff}
+        .tag { font-size: 0.7em; background: #e0e0e0; padding: 2px 6px; border-radius: 10px; text-transform: uppercase; font-weight: bold; }
+        .tag_internal { background: #b6ffa2ff; color: #2d5a27; }
+        .tag_external { background: #ff8686ff; color: #5a1a1a; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>TheJFK.ca Service Directory</h1>
-        <p>Environment: <strong>{{ env }}</strong></p>
+        <p>Environment: <strong>{{ env }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
         
         {% for svc in services_list | sort(attribute='name') %}
-            {# Only show services that are in this environment's scope and which aren't intentionally hidden#}
-            {% if scope in svc.scope and svc.hide_on_page | default(false) == false %}
+            {# Only show services that are in this environment's scope and which aren't intentionally hidden #}
+            {% if scope in svc.scope and not svc.hide_on_page | default(false) %}
+                <?php $status = get_backend_status('{{ svc.name }}', $stats); ?>
+                
                 <div class="service-card">
-                    <div>
-                        <span class="service-name">{{ svc.name | replace('_', ' ') | title }}</span>
-                        <br>
-                        {%- for target_scope in svc.scope %}
-                        <span class="tag tag_{{ target_scope }}">{{ target_scope }}</span>
-                        {% endfor %}
+                    <div style="display: flex; align-items: center; min-width: 200px;">
+                        <span class="status-dot status-<?php echo $status; ?>" title="Status: <?php echo strtoupper($status); ?>"></span>
+                        <div>
+                            <span class="service-name">{{ svc.name | replace('_', ' ') | title }}</span>
+                            <br>
+                            {%- for target_scope in svc.scope %}
+                            <span class="tag tag_{{ target_scope }}">{{ target_scope }}</span>
+                            {% endfor %}
+                        </div>
                     </div>
+
                     <div class="desc">
-                        {{ svc.description | default(" ") }}
-                        
+                        {{ svc.description | default("No description provided.") }}
                     </div>
-                    {# Assuming your URL pattern follows the service name #}
-                    <a href="https://{{ svc.fqdn_list | first }}" class="btn" target="_blank">View site</a>
+
+                    <div>
+                        <a href="https://{{ svc.fqdn_list | first }}" class="btn" target="_blank">View site</a>
+                    </div>
                 </div>
             {% endif %}
         {% endfor %}
