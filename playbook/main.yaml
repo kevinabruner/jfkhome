@@ -1,5 +1,6 @@
 - name: Build 
   hosts: repo_jfkhome
+  become: true
   vars_files:
     - vars.yaml
   tasks:                
@@ -23,20 +24,20 @@
       user:
         name: kevin
         state: present
-      become: yes
+      
 
     - name: Ensure group www-data exists
       group:
         name: www-data
         state: present
-      become: yes
+      
 
     - name: Add user kevin to group www-data
       user:
         name: kevin
         groups: www-data
         append: yes
-      become: yes
+      
                        
     - name: Enable apache2 service
       systemd:
@@ -48,13 +49,13 @@
       service:
         name: apache2
         state: restarted
-      become: yes        
+              
 
     - name: Delete /var/www/html/index.html
       ansible.builtin.file:
         path: /var/www/html/index.html
         state: absent
-      become: yes
+      
 
     - name: Generate service list from services directory (in reverse proxy repo)
       include_tasks: /home/kevin/reverse-proxy/tasks/generate_services.yaml
