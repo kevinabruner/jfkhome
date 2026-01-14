@@ -1,6 +1,6 @@
 - name: Generate Service Catalog index.html
   template:
-    src: "{{ git_dir }}/templates/services_page.html.j2"
+    src: "{{ git_dir }}/templates/services_page.php.j2"
     dest: /var/www/html/index.html # Or your specific web root
     owner: www-data
     group: www-data

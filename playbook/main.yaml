@@ -48,13 +48,3 @@
     - name: Generate services web page on jfkhome servers (in reverse proxy repo)
       include_tasks: "{{ git_dir }}/tasks/generate_site.yaml"
 
-    - name: Deploy HAProxy Status Bridge
-      template:
-        src: ../templates/status.php.j2
-        dest: /var/www/html/status.php
-        owner: www-data
-        group: www-data
-        mode: '0644'
-      vars:
-        # Pass the internal IP of your proxy here
-        haproxy_internal_ip: "{{ groups['repo_reverse_proxy'][0] }}"
