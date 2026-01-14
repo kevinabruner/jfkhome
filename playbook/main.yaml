@@ -46,7 +46,7 @@
       include_tasks: /home/kevin/reverse-proxy/tasks/generate_services.yaml
 
     - name: Generate services web page on jfkhome servers (in reverse proxy repo)
-      include_tasks: "{{ git_dir }}/generate_site.yaml"
+      include_tasks: "{{ git_dir }}/tasks/generate_site.yaml"
 
     - name: Deploy HAProxy Status Bridge
       template:
