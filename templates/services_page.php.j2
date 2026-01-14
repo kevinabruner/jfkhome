@@ -1,5 +1,6 @@
 {# Define scope #}
 {%- set scope = 'external' if env == 'prod' else 'internal' -%}
+<?php
 
 $stats_url = "{{ proxy_stats_url }}";
 $stats_json = @file_get_contents($stats_url);
