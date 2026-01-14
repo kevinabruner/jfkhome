@@ -70,9 +70,16 @@ function get_backend_status($svc_name, $all_stats) {
         <p>Environment: <strong>{{ env }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
         
         {% for svc in services_list | sort(attribute='name') %}
-            {# Only show services that are in this environment's scope and which aren't intentionally hidden #}
+            {# 1. Standard Ansible filter for scope and visibility #}
             {% if scope in svc.scope and not svc.hide_on_page | default(false) %}
-                <?php $status = get_backend_status('{{ svc.name }}', $stats); ?>
+                
+                <?php 
+                // 2. Perform the live HAProxy lookup
+                $status = get_backend_status('{{ svc.name }}', $stats); 
+                
+                // 3. Only render the HTML if the backend was actually found
+                if ($status !== 'unknown'): 
+                ?>
                 
                 <div class="service-card">
                     <div style="display: flex; align-items: center; min-width: 200px;">
@@ -87,13 +94,15 @@ function get_backend_status($svc_name, $all_stats) {
                     </div>
 
                     <div class="desc">
-                        {{ svc.description | default("No description provided.") }}
+                        {{ svc.description | default(" ") }}
                     </div>
 
                     <div>
                         <a href="https://{{ svc.fqdn_list | first }}" class="btn" target="_blank">View site</a>
                     </div>
                 </div>
+
+                <?php endif; // End status check ?>
             {% endif %}
         {% endfor %}
     </div>
