@@ -33,7 +33,7 @@
                     <div style="display: flex; align-items: center; min-width: 200px;">
                         <span class="status-dot status-<?php echo $status; ?>" title="Status: <?php echo strtoupper($status); ?>"></span>
                         <div>
-                            <span class="service-name">{{ svc.name | replace('_', ' ') | title }}</span>
+                            <span class="service-name">{{ svc.name | replace('_', ' ') }}</span>
                             <br>
                             {%- for target_scope in svc.scope %}
                             <span class="tag tag_{{ target_scope }}">{{ target_scope }}</span>
