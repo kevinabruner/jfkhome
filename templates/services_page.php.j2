@@ -1,6 +1,9 @@
 {# Define scope #}
 {%- set scope = 'external' if env == 'prod' else 'internal' -%}
+
+{# Include a script to parse the haproxy json information #}
 <?php include 'status.php';?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
