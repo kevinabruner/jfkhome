@@ -1,8 +1,8 @@
 <?php
 // Define the internal pxnames of your database clusters in HAProxy
 $db_clusters = [
-    ['display' => 'MySQL Cluster', 'pxname' => 'mysql_backend'],
-    ['display' => 'PostgreSQL Prod', 'pxname' => 'psql_backend'],];
+    ['display' => 'MySQL Cluster {{ env }}', 'pxname' => 'mysql_backend'],
+    ['display' => 'PostgreSQL {{ env }}', 'pxname' => 'psql_backend'],];
 
 foreach ($db_clusters as $db):
     $status = get_backend_status_raw($db['pxname'], $stats);
