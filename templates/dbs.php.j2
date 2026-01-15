@@ -1,18 +1,18 @@
 <?php
-// Define the internal pxnames of your database clusters in HAProxy
+// Define the internal svc_names of your database clusters in HAProxy
 $db_clusters = [
-    ['display' => 'MySQL Cluster {{ env }}', 'pxname' => 'mysql_backend'],
-    ['display' => 'PostgreSQL {{ env }}', 'pxname' => 'psql_backend'],];
+    ['display' => 'MySQL Cluster {{ env }}', 'svc_name' => 'mysql'],
+    ['display' => 'PostgreSQL {{ env }}', 'svc_name' => 'psql'],];
 
 foreach ($db_clusters as $db):
-    $status = get_backend_status_raw($db['pxname'], $stats);
+    $status = get_backend_status_raw($db['svc_name'], $stats, "db");
 ?>
     <div class="service-card db-card">
         <div style="display: flex; align-items: center;">
             <span class="status-dot status-<?php echo $status; ?>"></span>
             <span class="service-name"><?php echo $db['display']; ?></span>
         </div>
-        <div class="desc">Database Backend: <code><?php echo $db['pxname']; ?></code></div>
+        <div class="desc">Database Backend: <code><?php echo $db['svc_name']; ?></code></div>
         <div class="tag tag_internal">Infrastructure</div>
     </div>
 <?php endforeach; ?>

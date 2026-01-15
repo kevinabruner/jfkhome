@@ -23,7 +23,7 @@
                 
                 <?php 
                 // 2. Perform the live HAProxy lookup
-                $status = get_backend_status('{{ svc.name }}', $stats); 
+                $status = get_backend_status('{{ svc.name }}', $stats, "web"); 
                 
                 // 3. Only render the HTML if the backend was actually found
                 if ($status !== 'unknown'): 
