@@ -18,6 +18,16 @@
   vars:
     services_list: "{{ flat_services_list }}"
 
+- name: Generate status php script index.php
+  template:
+    src: "{{ git_dir }}/templates/dbs.php.j2"
+    dest: /var/www/html/dbs.php 
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  vars:
+    services_list: "{{ flat_services_list }}"
+
 - name: copy css
   copy:
     src: "{{ git_dir }}/templates/style.css"

@@ -31,4 +31,29 @@ function get_backend_status($svc_name, $all_stats) {
     }
     return 'unknown';
 }
+$rendered_backends = []; // Track what we've shown
+
+function get_backend_status($svc_name, $all_stats) {
+    global $rendered_backends;
+    $target_px = $svc_name . "_backend";
+    
+    foreach ($all_stats as $row) {
+        $data = flatten_row($row); // Helper to make the nested JSON readable
+        if ($data['pxname'] === $target_px && $data['svname'] === 'BACKEND') {
+            $rendered_backends[] = $target_px; // Mark as rendered
+            return strtolower($data['status']);
+        }
+    }
+    return 'unknown';
+}
+
+// Helper to clean up that nested HAProxy 2.x structure
+function flatten_row($row) {
+    $flat = [];
+    foreach ($row as $field_obj) {
+        $flat[$field_obj['field']['name']] = $field_obj['value']['value'];
+    }
+    return $flat;
+}
+
 ?>
