@@ -37,7 +37,7 @@ function get_backend_status($svc_name, $all_stats, $service_type) {
             if ($service_type == "web") $rendered_backends[] = $target_px; 
 
             //returns the status, if it exists
-            if (isset($data['status'])) return $data['status'];
+            if (isset($data['status'])) strtolower(return $data['status']);
             else return 'unknown';        
         }
     }
