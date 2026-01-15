@@ -9,6 +9,7 @@
     - { src: 'services_page.php.j2', dest: 'index.php' }
     - { src: 'status.php.j2',        dest: 'status.php' }
     - { src: 'dbs.php.j2',           dest: 'dbs.php' }
+    - { src: '404.html',           dest: '404.html' }
     - { src: 'style.css',            dest: 'style.css' } # template works for static files too
   vars:
     services_list: "{{ flat_services_list }}"
