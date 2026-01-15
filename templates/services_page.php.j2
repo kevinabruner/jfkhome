@@ -17,7 +17,8 @@
         <p>Environment: <strong>{{ env }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
         
         {% for svc in services_list | sort(attribute='name') %}
-            {# 1. Standard Ansible filter for scope and visibility #}
+
+            {# 1. Filter for scope (internal/external) and visibility (not intentionally hidden) #}
             {% if scope in svc.scope and not svc.hide_on_page | default(false) %}
                 
                 <?php 
