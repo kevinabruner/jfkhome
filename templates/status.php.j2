@@ -1,9 +1,9 @@
 <?php
 $stats_url = "{{ proxy_stats_url }}";
-$stats_json = @file_get_contents($stats_url);
+$stats_json = file_get_contents($stats_url);
 $stats = $stats_json ? json_decode($stats_json, true) : [];
+$rendered_backends = [];    
 
-$rendered_backends = []; 
 
 // Helper to clean up the nested HAProxy 2.x structure safely
 function flatten_row($row) {
@@ -18,28 +18,27 @@ function flatten_row($row) {
 }
 
 // Status checker for backends with service file definitions in the reverse_proxy repo
-function get_backend_status($svc_name, $all_stats) {
-    global $rendered_backends;
+function get_backend_status($svc_name, $all_stats, $service_type) {    
+    global $rendered_backends;    
     $target_px = $svc_name . "_backend";
-    
+
     foreach ($all_stats as $row) {
         $data = flatten_row($row);
-        if (isset($data['pxname']) && $data['pxname'] === $target_px && isset($data['svname']) && $data['svname'] === 'BACKEND') {
-            $rendered_backends[] = $target_px; 
-            return isset($data['status']) ? strtolower($data['status']) : 'unknown';
+        if (
+            isset($data['pxname']) && 
+            $data['pxname'] === $target_px && 
+            isset($data['svname']) && 
+            $data['svname'] === 'BACKEND'
+        ) 
+        {            
+            //If the service type is web, add to rendered backends (Any web service not in this array will be hidden)
+            if ($service_type == "web") $rendered_backends[] = $target_px; 
+
+            //returns the status, if it exists
+            if (isset($data['status'])) return strtolower($data['status']);
+            else return 'unknown';        
         }
     }
     return 'unknown';
 }
 
-// Version for the DBs (handles raw names like psql_backend)
-function get_backend_status_raw($target_px, $all_stats) {
-    foreach ($all_stats as $row) {
-        $data = flatten_row($row);
-        if (isset($data['pxname']) && $data['pxname'] === $target_px && isset($data['svname']) && $data['svname'] === 'BACKEND') {
-            return isset($data['status']) ? strtolower($data['status']) : 'unknown';
-        }
-    }
-    return 'unknown';
-}
-?>
