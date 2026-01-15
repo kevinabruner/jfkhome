@@ -81,9 +81,10 @@ hr{
 }
 .status-list {
     list-style: none;    
+    display:flex
 }
 .status-list li{
-  flex-grow: 1;
+  flex-grow: 1;  
 }
 
 /* Button and Tags */
