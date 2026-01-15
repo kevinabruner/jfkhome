@@ -1,20 +1,24 @@
 {# Define scope #}
 {%- set scope = 'external' if env == 'prod' else 'internal' -%}
+
+{# Include a script to parse the haproxy json information #}
 <?php include 'status.php';?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Service Directory - {{ env | upper }}</title>
+    <title>Service Directory - {{ env | title }}</title>
     <link rel="stylesheet" type="text/css" href="./style.css">  
 </head>
 <body>
     <div class="container">
-        <h1>TheJFK.ca Service Directory</h1>
-        <p>Environment: <strong>{{ env }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
+        <h1>TheJFK.ca Service Directory- {{ scope | title }}</h1>
+        <p>Environment: <strong>{{ scope }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
         
         {% for svc in services_list | sort(attribute='name') %}
-            {# 1. Standard Ansible filter for scope and visibility #}
+
+            {# 1. Filter for scope (internal/external) and visibility (not intentionally hidden) #}
             {% if scope in svc.scope and not svc.hide_on_page | default(false) %}
                 
                 <?php 
@@ -29,7 +33,7 @@
                     <div style="display: flex; align-items: center; min-width: 200px;">
                         <span class="status-dot status-<?php echo $status; ?>" title="Status: <?php echo strtoupper($status); ?>"></span>
                         <div>
-                            <span class="service-name">{{ svc.name | replace('_', ' ') | title }}</span>
+                            <span class="service-name">{{ svc.name | replace('_', ' ') }}</span>
                             <br>
                             {%- for target_scope in svc.scope %}
                             <span class="tag tag_{{ target_scope }}">{{ target_scope }}</span>
@@ -49,6 +53,11 @@
                 <?php endif; // End status check ?>
             {% endif %}
         {% endfor %}
+    </div>
+    <hr>
+    <div class="db-container container">
+    <h2>Database Cluster Status</h2>
+        <?php include 'dbs.php';?>
     </div>
 </body>
 </html>

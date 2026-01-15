@@ -1,32 +1,43 @@
 <?php
-
 $stats_url = "{{ proxy_stats_url }}";
 $stats_json = @file_get_contents($stats_url);
 $stats = $stats_json ? json_decode($stats_json, true) : [];
 
-function get_backend_status($svc_name, $all_stats) {
-    // We expect the backend in HAProxy to be named svc_name_backend
-    $target_px = $svc_name . "_backend";
+$rendered_backends = []; 
 
-    // Loop through each "row" in the HAProxy output
-    foreach ($all_stats as $row) {
-        $current_px = "";
-        $current_sv = "";
-        $current_status = "";
-
-        // Each row is an array of field objects
-        foreach ($row as $field_obj) {
-            $fieldName = $field_obj['field']['name'];
-            $val = $field_obj['value']['value'];
-
-            if ($fieldName === 'pxname') $current_px = $val;
-            if ($fieldName === 'svname') $current_sv = $val;
-            if ($fieldName === 'status') $current_status = $val;
+// Helper to clean up the nested HAProxy 2.x structure safely
+function flatten_row($row) {
+    $flat = [];
+    foreach ($row as $field_obj) {
+        // Safety check: ensure the keys exist before accessing them
+        if (isset($field_obj['field']['name']) && isset($field_obj['value']['value'])) {
+            $flat[$field_obj['field']['name']] = $field_obj['value']['value'];
         }
+    }
+    return $flat;
+}
 
-        // Check if this row is the BACKEND for our target service
-        if ($current_px === $target_px && $current_sv === 'BACKEND') {
-            return strtolower($current_status); // e.g., 'up', 'down', 'maint'
+// Status checker for backends with service file definitions in the reverse_proxy repo
+function get_backend_status($svc_name, $all_stats) {
+    global $rendered_backends;
+    $target_px = $svc_name . "_backend";
+    
+    foreach ($all_stats as $row) {
+        $data = flatten_row($row);
+        if (isset($data['pxname']) && $data['pxname'] === $target_px && isset($data['svname']) && $data['svname'] === 'BACKEND') {
+            $rendered_backends[] = $target_px; 
+            return isset($data['status']) ? strtolower($data['status']) : 'unknown';
+        }
+    }
+    return 'unknown';
+}
+
+// Version for the DBs (handles raw names like psql_backend)
+function get_backend_status_raw($target_px, $all_stats) {
+    foreach ($all_stats as $row) {
+        $data = flatten_row($row);
+        if (isset($data['pxname']) && $data['pxname'] === $target_px && isset($data['svname']) && $data['svname'] === 'BACKEND') {
+            return isset($data['status']) ? strtolower($data['status']) : 'unknown';
         }
     }
     return 'unknown';
