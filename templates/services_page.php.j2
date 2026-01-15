@@ -13,8 +13,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>TheJFK.ca Service Directory</h1>
-        <p>Environment: <strong>{{ env }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
+        <h1>TheJFK.ca Service Directory- {{ scope | upper }}</h1>
+        <p>Environment: <strong>{{ scope }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
         
         {% for svc in services_list | sort(attribute='name') %}
 
@@ -55,9 +55,9 @@
         {% endfor %}
     </div>
     <hr>
-<div class="db-container container">
-<h2>Database Cluster Status</h2>
-    <?php include 'dbs.php';?>
-</div>
+    <div class="db-container container">
+    <h2>Database Cluster Status</h2>
+        <?php include 'dbs.php';?>
+    </div>
 </body>
 </html>
