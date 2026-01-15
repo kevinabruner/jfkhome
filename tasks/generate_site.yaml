@@ -12,4 +12,3 @@
     - { src: 'style.css',            dest: 'style.css' } # template works for static files too
   vars:
     services_list: "{{ flat_services_list }}"
-    proxy_stats_url: "http://{{ groups['repo_reverse_proxy'][0] }}:8404/stats?json"
