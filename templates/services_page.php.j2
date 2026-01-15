@@ -31,7 +31,7 @@
                 
                 <div class="service-card">
                     <div style="display: flex; align-items: center; min-width: 200px;">
-                        <span class="status-dot status-<?php echo $status; ?>" title="Status: <?php echo strtoupper($status); ?>"></span>
+                        <span class="status-dot status-<?php echo $info['status']; ?>" title="Status: <?php echo strtoupper($info['status']); ?>"></span>
                         <div>
                             <span class="service-name">{{ svc.name | replace('_', ' ') }}</span>
                             <br>
