@@ -26,12 +26,19 @@ function get_backend_status($svc_name, $all_stats, $service_type) {
 
     foreach ($all_stats as $row) {
         $data = flatten_row($row);
-        if (isset($data['pxname']) && $data['pxname'] === $target_px && isset($data['svname']) && $data['svname'] === 'BACKEND') {
-            
+        if (
+            isset($data['pxname']) && 
+            $data['pxname'] === $target_px && 
+            isset($data['svname']) && 
+            $data['svname'] === 'BACKEND'
+        ) 
+        {            
             //If the service type is web, add to rendered backends (Any web service not in this array will be hidden)
             if ($service_type == "web") $rendered_backends[] = $target_px; 
-            
-            return isset($data['status']) ? strtolower($data['status']) : 'unknown';
+
+            //returns the status, if it exists
+            if (isset($data['status'])) return $data['status'];
+            else return 'unknown';        
         }
     }
     return 'unknown';
