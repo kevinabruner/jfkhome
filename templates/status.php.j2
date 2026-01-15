@@ -1,59 +1,45 @@
 <?php
-
 $stats_url = "{{ proxy_stats_url }}";
 $stats_json = @file_get_contents($stats_url);
 $stats = $stats_json ? json_decode($stats_json, true) : [];
 
-function get_backend_status($svc_name, $all_stats) {
-    // We expect the backend in HAProxy to be named svc_name_backend
-    $target_px = $svc_name . "_backend";
-
-    // Loop through each "row" in the HAProxy output
-    foreach ($all_stats as $row) {
-        $current_px = "";
-        $current_sv = "";
-        $current_status = "";
-
-        // Each row is an array of field objects
-        foreach ($row as $field_obj) {
-            $fieldName = $field_obj['field']['name'];
-            $val = $field_obj['value']['value'];
-
-            if ($fieldName === 'pxname') $current_px = $val;
-            if ($fieldName === 'svname') $current_sv = $val;
-            if ($fieldName === 'status') $current_status = $val;
-        }
-
-        // Check if this row is the BACKEND for our target service
-        if ($current_px === $target_px && $current_sv === 'BACKEND') {
-            return strtolower($current_status); // e.g., 'up', 'down', 'maint'
-        }
-    }
-    return 'unknown';
-}
 $rendered_backends = []; // Track what we've shown
 
+// Helper to clean up the nested HAProxy 2.x structure safely
+function flatten_row($row) {
+    $flat = [];
+    foreach ($row as $field_obj) {
+        // Safety check: ensure the keys exist before accessing them
+        if (isset($field_obj['field']['name']) && isset($field_obj['value']['value'])) {
+            $flat[$field_obj['field']['name']] = $field_obj['value']['value'];
+        }
+    }
+    return $flat;
+}
+
+// Single version of the status checker
 function get_backend_status($svc_name, $all_stats) {
     global $rendered_backends;
     $target_px = $svc_name . "_backend";
     
     foreach ($all_stats as $row) {
-        $data = flatten_row($row); // Helper to make the nested JSON readable
-        if ($data['pxname'] === $target_px && $data['svname'] === 'BACKEND') {
-            $rendered_backends[] = $target_px; // Mark as rendered
-            return strtolower($data['status']);
+        $data = flatten_row($row);
+        if (isset($data['pxname']) && $data['pxname'] === $target_px && isset($data['svname']) && $data['svname'] === 'BACKEND') {
+            $rendered_backends[] = $target_px; 
+            return isset($data['status']) ? strtolower($data['status']) : 'unknown';
         }
     }
     return 'unknown';
 }
 
-// Helper to clean up that nested HAProxy 2.x structure
-function flatten_row($row) {
-    $flat = [];
-    foreach ($row as $field_obj) {
-        $flat[$field_obj['field']['name']] = $field_obj['value']['value'];
+// Version for the DBs (handles raw names like psql_backend)
+function get_backend_status_raw($target_px, $all_stats) {
+    foreach ($all_stats as $row) {
+        $data = flatten_row($row);
+        if (isset($data['pxname']) && $data['pxname'] === $target_px && isset($data['svname']) && $data['svname'] === 'BACKEND') {
+            return isset($data['status']) ? strtolower($data['status']) : 'unknown';
+        }
     }
-    return $flat;
+    return 'unknown';
 }
-
 ?>
