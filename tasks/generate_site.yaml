@@ -1,7 +1,7 @@
 - name: Generate Service Catalog index.php
   template:
     src: "{{ git_dir }}/templates/services_page.php.j2"
-    dest: /var/www/html/index.php # Or your specific web root
+    dest: /var/www/html/index.php 
     owner: www-data
     group: www-data
     mode: '0644'
@@ -11,7 +11,7 @@
 - name: Generate status php script index.php
   template:
     src: "{{ git_dir }}/templates/status.php.j2"
-    dest: /var/www/html/status.php # Or your specific web root
+    dest: /var/www/html/status.php 
     owner: www-data
     group: www-data
     mode: '0644'
@@ -19,9 +19,9 @@
     services_list: "{{ flat_services_list }}"
 
 - name: copy css
-  template:
-    src: "{{ git_dir }}/templates/style.css.j2"
-    dest: /var/www/html/style.css # Or your specific web root
+  copy:
+    src: "{{ git_dir }}/templates/style.css"
+    dest: /var/www/html/style.css 
     owner: www-data
     group: www-data
     mode: '0644'

@@ -1,0 +1,37 @@
+- name: Install apt packages
+  apt:  
+    update_cache: yes
+    name: "{{ item }}"
+  loop:
+    - php
+    - apache2
+    - ncdu        
+    - vim
+    - htop               
+  become: true
+
+- name: Ensure groups exist
+  group:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - www-data
+
+- name: Manage user kevin and group memberships
+  user:
+    name: kevin
+    state: present
+    groups: www-data
+    append: yes    
+                    
+- name: Manage Apache2 Service
+  become: true
+  service:
+    name: apache2
+    state: restarted
+    enabled: yes
+
+- name: Delete /var/www/html/index.html
+  ansible.builtin.file:
+    path: /var/www/html/index.html
+    state: absent      

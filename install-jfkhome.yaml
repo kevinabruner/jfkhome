@@ -2,41 +2,16 @@
   hosts: repo_jfkhome
   become: true
   tasks:                
-    - name: Install apt packages
-      apt:  
-        update_cache: yes
-        name: "{{ item }}"
-      loop:
-        - php
-        - apache2
-        - ncdu        
-        - vim
-        - htop               
-      become: true
+    - name: Run first install tasks
+      import_tasks: first_install.yaml
 
-    - name: Ensure groups exist
-      group:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - www-data
+- name: Build 
+  hosts: repo_jfkhome
+  become: true
+  tasks:                
+    - name: Generate service list from services directory (in reverse proxy repo)
+      include_tasks: /home/kevin/reverse-proxy/tasks/generate_services.yaml
 
-    - name: Manage user kevin and group memberships
-      user:
-        name: kevin
-        state: present
-        groups: www-data
-        append: yes    
-                       
-    - name: Manage Apache2 Service
-      become: true
-      service:
-        name: apache2
-        state: restarted
-        enabled: yes
-
-    - name: Delete /var/www/html/index.html
-      ansible.builtin.file:
-        path: /var/www/html/index.html
-        state: absent      
+    - name: Generate services web page on jfkhome servers (in reverse proxy repo)
+      include_tasks: "{{ git_dir }}/tasks/generate_site.yaml"
 
