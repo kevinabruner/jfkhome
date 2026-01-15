@@ -16,7 +16,7 @@
         <h1>TheJFK.ca Service Directory- {{ scope | title }}</h1>
         <p>Environment: <strong>{{ scope }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
         <p>Legend: 
-            <ul>
+            <ul class="status-list">
                 <li><span class="status-dot status-up" title="Status: up"></span>Site is up</li>
                 <li><span class="status-dot status-down" title="Status: down"></span>Site is down</li>
                 <li><span class="status-dot status-maint" title="Status: maint"></span>Site is under maintenance</li>
