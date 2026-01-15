@@ -21,19 +21,19 @@
             {# 1. Filter for scope (internal/external) and visibility (not intentionally hidden) #}
             {% if scope in svc.scope and not svc.hide_on_page | default(false) %}
                 
-                <?php 
-                // 2. Perform the live HAProxy lookup
+            <?php 
+                {# 2. Perform the live HAProxy lookup #}
                 $status = get_backend_status('{{ svc.name }}', $stats, "web"); 
                 
-                // 3. Only render the HTML if the backend was actually found
+                {# 3. Only render the HTML if the backend actually has a status code (backend actually exists or not) #}
                 if ($status !== 'unknown'): 
-                ?>
+            ?>
                 
                 <div class="service-card">
                     <div style="display: flex; align-items: center; min-width: 200px;">
                         <span class="status-dot status-<?php echo $status; ?>" title="Status: <?php echo strtoupper($status); ?>"></span>
                         <div>
-                            <span class="service-name">{{ svc.name | replace('_', ' ') }}</span>
+                            <span class="service-name">{{ svc.name }}</span>
                             <br>
                             {%- for target_scope in svc.scope %}
                             <span class="tag tag_{{ target_scope }}">{{ target_scope }}</span>
