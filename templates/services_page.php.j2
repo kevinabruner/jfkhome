@@ -23,10 +23,10 @@
                 
                 <?php 
                 // 2. Perform the live HAProxy lookup
-                $status = get_backend_status('{{ svc.name }}', $stats, "web"); 
+                $info = get_backend_info('{{ svc.name }}', $stats, "web"); 
                 
                 // 3. Only render the HTML if the backend was actually found
-                if ($status !== 'unknown'): 
+                if ($info): 
                 ?>
                 
                 <div class="service-card">
@@ -42,11 +42,11 @@
                     </div>
 
                     <div class="desc">
-                        {{ svc.description | default(" ") }}
+                        <?php echo htmlspecialchars($info['desc']); ?>
                     </div>
 
                     <div>
-                        <a href="https://{{ svc.fqdn_list | first }}" class="btn" target="_blank">View site</a>
+                        <a href="https://<?php echo htmlspecialchars($info['url']); ?>" class="btn" target="_blank">View site</a>
                     </div>
                 </div>
 

@@ -18,7 +18,7 @@ function flatten_row($row) {
 }
 
 // Status checker for backends with service file definitions in the reverse_proxy repo
-function get_backend_status($svc_name, $all_stats, $service_type) {    
+function get_backend_info($svc_name, $all_stats, $service_type) {    
     global $rendered_backends;    
     $target_px = $svc_name . "_backend";
 
@@ -32,13 +32,20 @@ function get_backend_status($svc_name, $all_stats, $service_type) {
         ) 
         {            
             //If the service type is web, add to rendered backends (Any web service not in this array will be hidden)
-            if ($service_type == "web") $rendered_backends[] = $target_px; 
+            if ($service_type == "web") {
+                $rendered_backends[] = $target_px; 
+                $raw_desc = $data['desc'] ?? '|'; 
+                $parts = explode('|', $raw_desc, 2);
+            }
 
             //returns the status, if it exists
-            if (isset($data['status'])) return strtolower($data['status']);
-            else return 'unknown';        
+            return [
+                'status' => strtolower($data['status'] ?? 'unknown'),
+                'url'    => $parts[0] ?? '',
+                'desc'   => $parts[1] ?? ''
+            ];        
         }
     }
-    return 'unknown';
+    return null;
 }
 
