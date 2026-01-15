@@ -3,7 +3,7 @@ $stats_url = "{{ proxy_stats_url }}";
 $stats_json = @file_get_contents($stats_url);
 $stats = $stats_json ? json_decode($stats_json, true) : [];
 
-$rendered_backends = []; // Track what we've shown
+$rendered_backends = []; 
 
 // Helper to clean up the nested HAProxy 2.x structure safely
 function flatten_row($row) {
@@ -17,7 +17,7 @@ function flatten_row($row) {
     return $flat;
 }
 
-// Single version of the status checker
+// Status checker for backends with service file definitions in the reverse_proxy repo
 function get_backend_status($svc_name, $all_stats) {
     global $rendered_backends;
     $target_px = $svc_name . "_backend";
