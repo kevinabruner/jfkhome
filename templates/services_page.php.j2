@@ -16,43 +16,47 @@
         <h1>TheJFK.ca Service Directory- {{ scope | title }}</h1>
         <p>Environment: <strong>{{ scope }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
         
-        {% for svc in services_list | sort(attribute='name') %}
+       <?php 
+        // 1. Loop through our metadata sidecar (the services defined in Ansible)
+        foreach ($metadata as $backend_name => $meta): 
+            
+            // Extract the short name (e.g., "koscinski" from "koscinski_backend")
+            $short_name = str_replace('_backend', '', $backend_name);
+            
+            // 2. Perform the live HAProxy lookup using our existing function
+            // Note: I'm passing $short_name because your function appends '_backend'
+            $info = get_backend_info($short_name, $stats, "web"); 
+            
+            // 3. Only render if HAProxy actually has data for this backend
+            if ($info): 
+        ?>
 
-            {# 1. Filter for scope (internal/external) and visibility (not intentionally hidden) #}
-            {% if scope in svc.scope and not svc.hide_on_page | default(false) %}
-                
-                <?php 
-                // 2. Perform the live HAProxy lookup
-                $info = get_backend_info('{{ svc.name }}', $stats, "web"); 
-                
-                // 3. Only render the HTML if the backend was actually found
-                if ($info): 
-                ?>
-                
-                <div class="service-card">
-                    <div style="display: flex; align-items: center; min-width: 200px;">
-                        <span class="status-dot status-<?php echo $info['status']; ?>" title="Status: <?php echo strtoupper($info['status']); ?>"></span>
-                        <div>
-                            <span class="service-name">{{ svc.name | replace('_', ' ') }}</span>
-                            <br>
-                            {%- for target_scope in svc.scope %}
-                            <span class="tag tag_{{ target_scope }}">{{ target_scope }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="desc">
-                        <?php echo htmlspecialchars($info['desc']); ?>
-                    </div>
-
+            <div class="service-card">
+                <div style="display: flex; align-items: center; min-width: 200px;">
+                    <span class="status-dot status-<?php echo $info['status']; ?>" 
+                        title="Status: <?php echo strtoupper($info['status']); ?>"></span>
                     <div>
-                        <a href="https://<?php echo htmlspecialchars($info['url']); ?>" class="btn" target="_blank">View site</a>
+                        <span class="service-name"><?php echo str_replace('_', ' ', $short_name); ?></span>
+                        <br>
+                        <?php if (isset($meta['scope'])): foreach ($meta['scope'] as $s): ?>
+                            <span class="tag tag_<?php echo $s; ?>"><?php echo $s; ?></span>
+                        <?php endforeach; endif; ?>
                     </div>
                 </div>
 
-                <?php endif; // End status check ?>
-            {% endif %}
-        {% endfor %}
+                <div class="desc">
+                    <?php echo htmlspecialchars($info['desc']); ?>
+                </div>
+
+                <div>
+                    <a href="<?php echo htmlspecialchars($info['url']); ?>" class="btn" target="_blank">View site</a>
+                </div>
+            </div>
+
+        <?php 
+            endif; // End if $info
+        endforeach; 
+        ?>
     </div>
     <hr>
     <div class="db-container container">
