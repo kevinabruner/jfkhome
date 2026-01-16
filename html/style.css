@@ -124,13 +124,11 @@ hr{
     color: #5a1a1a;
 }
 .legend-box {
-	/* float: right; */
+
 	background: #ebebeb;
 	padding: 1px 10px;
 	border-radius: 5px;
 	margin-bottom: 15px;
 	box-shadow: 2px 2px 3px #aaa;
-	/* position: absolute; */
-	/* float: right; */
-	/* right: 25px; */
+
 }
