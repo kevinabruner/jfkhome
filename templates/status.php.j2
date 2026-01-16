@@ -39,9 +39,7 @@ function get_backend_info($svc_name, $all_stats, $service_type) {
 
             // 2. Return the live status combined with the sidecar info
             return [
-                'status' => strtolower($data['status'] ?? 'unknown'),
-                'url'    => $info['url'],
-                'desc'   => $info['desc']
+                'status' => strtolower($data['status'] ?? 'unknown')
             ];        
         }
     }
