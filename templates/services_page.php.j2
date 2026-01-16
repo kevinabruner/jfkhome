@@ -24,8 +24,8 @@
             $short_name = str_replace('_backend', '', $backend_name);
             $info = get_backend_info($short_name, $stats, "web"); 
             
-            // 3. Only render if HAProxy actually has data for this backend
-            if ($info): 
+            // 3. Only render if HAProxy actually has data for this backend and it's not intentionally hidden via the service file (hide_on_page)
+            if ($info and $meta['hide'] != "true"): 
         ?>
             <div class="service-card">
                 <div style="display: flex; align-items: center; min-width: 200px;">
