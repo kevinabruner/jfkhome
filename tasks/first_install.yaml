@@ -16,7 +16,7 @@
     state: present
   loop:
     - www-data
-
+  
 - name: Manage user kevin and group memberships
   user:
     name: kevin

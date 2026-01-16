@@ -1,0 +1,63 @@
+{# Define scope #}
+{%- set scope = 'external' if env == 'prod' else 'internal' -%}
+
+{# Include a script to parse the haproxy json information #}
+<?php include 'status.php';?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Service Directory - {{ env | title }}</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">  
+</head>
+<body>
+    <div class="container">
+        <h1>TheJFK.ca Service Directory- {{ scope | title }}</h1>
+        <p>Environment: <strong>{{ scope }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
+        
+       <?php 
+        // 1. Loop through our metadata sidecar (the services defined in Ansible)
+        foreach ($metadata as $backend_name => $meta): 
+            
+            // Extract the short name and perform the live HAProxy lookup 
+            $short_name = str_replace('_backend', '', $backend_name);
+            $info = get_backend_info($short_name, $stats, "web"); 
+            
+            // 3. Only render if HAProxy actually has data for this backend and it's not intentionally hidden via the service file (hide_on_page)
+            if ($info and $meta['hide'] != "true"): 
+        ?>
+            <div class="service-card">
+                <div style="display: flex; align-items: center; min-width: 200px;">
+                    <span class="status-dot status-<?php echo $info['status']; ?>" 
+                        title="Status: <?php echo strtoupper($info['status']); ?>"></span>
+                    <div>
+                        <span class="service-name"><?php echo str_replace('_', ' ', $short_name); ?></span>
+                        <br>
+                        <?php if (isset($meta['scope'])): foreach ($meta['scope'] as $s): ?>
+                            <span class="tag tag_<?php echo $s; ?>"><?php echo $s; ?></span>
+                        <?php endforeach; endif; ?>
+                    </div>
+                </div>
+
+                <div class="desc">
+                    <?php echo htmlspecialchars($meta['desc']); ?>
+                </div>
+
+                <div>
+                    <a href="<?php echo htmlspecialchars($meta['url']); ?>" class="btn" target="_blank">View site</a>
+                </div>
+            </div>
+
+        <?php 
+            endif; // End if $info
+        endforeach; 
+        ?>
+    </div>
+    <hr>
+    <div class="db-container container">
+    <h2>Database Cluster Status</h2>
+        <?php include 'dbs.php';?>
+    </div>
+</body>
+</html>

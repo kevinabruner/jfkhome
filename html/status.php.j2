@@ -2,8 +2,9 @@
 $stats_url = "{{ proxy_stats_url }}";
 $stats_json = file_get_contents($stats_url);
 $stats = $stats_json ? json_decode($stats_json, true) : [];
+$meta_raw = @file_get_contents('/var/www/html/services_meta.json');
+$metadata = json_decode($meta_raw, true) ?? [];
 $rendered_backends = [];    
-
 
 // Helper to clean up the nested HAProxy 2.x structure safely
 function flatten_row($row) {
@@ -18,27 +19,30 @@ function flatten_row($row) {
 }
 
 // Status checker for backends with service file definitions in the reverse_proxy repo
-function get_backend_status($svc_name, $all_stats, $service_type) {    
-    global $rendered_backends;    
+function get_backend_info($svc_name, $all_stats, $service_type) {   
+
+    global $rendered_backends, $metadata; // Added $metadata here
     $target_px = $svc_name . "_backend";
 
     foreach ($all_stats as $row) {
         $data = flatten_row($row);
+        
+        //checks if the current pxname is our target application and that it's a backend service
         if (
-            isset($data['pxname']) && 
-            $data['pxname'] === $target_px && 
-            isset($data['svname']) && 
-            $data['svname'] === 'BACKEND'
+            isset($data['pxname']) && $data['pxname'] === $target_px && 
+            isset($data['svname']) && $data['svname'] === 'BACKEND'
         ) 
         {            
-            //If the service type is web, add to rendered backends (Any web service not in this array will be hidden)
-            if ($service_type == "web") $rendered_backends[] = $target_px; 
+            if ($service_type == "web") {
+                $rendered_backends[] = $target_px;
+            }
 
-            //returns the status, if it exists
-            if (isset($data['status'])) return strtolower($data['status']);
-            else return 'unknown';        
+            // Return the live status 
+            return [
+                'status' => strtolower($data['status'] ?? 'unknown')
+            ];        
         }
     }
-    return 'unknown';
+    return null;
 }
 

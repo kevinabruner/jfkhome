@@ -1,15 +1,9 @@
-- name: Deploy all service catalog web assets
+- name: Deploy entire HTML directory with template processing
   template:
-    src: "{{ git_dir }}/templates/{{ item.src }}"
-    dest: "/var/www/html/{{ item.dest }}"
+    src: "{{ item.src }}"
+    dest: "/var/www/html/{{ item.path | regex_replace('\\.j2$', '') }}"
     owner: www-data
     group: www-data
-    mode: '0644'
-  loop:
-    - { src: 'services_page.php.j2', dest: 'index.php' }
-    - { src: 'status.php.j2',        dest: 'status.php' }
-    - { src: 'dbs.php.j2',           dest: 'dbs.php' }
-    - { src: '404.html',           dest: '404.html' }
-    - { src: 'style.css',            dest: 'style.css' } # template works for static files too
-  vars:
-    services_list: "{{ flat_services_list }}"
+    mode: "{{ item.mode | default('0644') }}"
+  loop: "{{ query('community.general.filetree', git_dir + '/html/') }}"
+  when: item.state == 'file'
