@@ -52,6 +52,7 @@ hr{
     margin: 0 20px;
 }
 
+
 /* Status Dot Styles */
 .status-dot {
     height: 12px;
@@ -79,6 +80,15 @@ hr{
 .status-unknown {
     background-color: #95a5a6;
 }
+
+.status-list {
+    list-style: none;    
+    display:flex
+}
+.status-list li{
+  flex-grow: 1;  
+}
+
 
 /* Button and Tags */
 .btn {
