@@ -1,59 +1,55 @@
 <?php
 $stats_url = "{{ proxy_stats_url }}";
 $stats_json = file_get_contents($stats_url);
-$stats = $stats_json ? json_decode($stats_json, true) : [];
+$raw_stats = $stats_json ? json_decode($stats_json, true) : [];
+
 $meta_raw = @file_get_contents('/var/www/html/services_meta.json');
 $metadata = json_decode($meta_raw, true) ?? [];
-$rendered_backends = [];    
 
-// Helper to clean up the nested HAProxy 2.x structure safely
-function flatten_row($row) {
-    $flat = [];
-    foreach ($row as $field_obj) {
-        // Safety check: ensure the keys exist before accessing them
-        if (isset($field_obj['field']['name']) && isset($field_obj['value']['value'])) {
-            $flat[$field_obj['field']['name']] = $field_obj['value']['value'];
+// 1. Process the raw stream into a usable lookup table
+$processed_stats = [];
+foreach ($raw_stats as $item) {
+    // We only care about objects that have a proxyName (Backends/Frontends/Servers)
+    if (isset($item['proxyName'])) {
+        $px = $item['proxyName'];
+        $sv = $item['serviceName'] ?? 'BACKEND';
+        $fieldName = $item['field']['name'] ?? null;
+        $val = $item['value']['value'] ?? null;
+
+        if ($fieldName) {
+            $processed_stats[$px][$sv][$fieldName] = $val;
         }
     }
-    return $flat;
 }
 
-// Status checker for backends with service file definitions in the reverse_proxy repo
-function get_backend_info($svc_name, $all_stats, $service_type) {    
-    global $rendered_backends;    
+// 2. Updated checker using our new lookup table
+function get_backend_info($svc_name, $service_type) {    
+    global $rendered_backends, $processed_stats, $metadata;    
     $target_px = $svc_name . "_backend";
 
+    // Grab metadata from your Ansible sidecar
     $info = $metadata[$target_px] ?? [
         'url' => '#', 
         'desc' => 'Service metadata missing'
     ];
 
-    foreach ($all_stats as $row) {
-        $data = flatten_row($row);
-        if (
-            isset($data['pxname']) && 
-            $data['pxname'] === $target_px && 
-            isset($data['svname']) && 
-            $data['svname'] === 'BACKEND'
-        ) 
-        {            
-            //If the service type is web, add to rendered backends (Any web service not in this array will be hidden)
-            if ($service_type == "web") {
-                $rendered_backends[] = $target_px; 
-                $raw_desc = $data['desc'] ?? '|'; 
-                $parts = explode('|', $raw_desc, 2);
-            }
+    // Check if we have live data for this backend's summary row
+    if (isset($processed_stats[$target_px]['BACKEND'])) {
+        $data = $processed_stats[$target_px]['BACKEND'];
 
-            //returns the status, if it exists
-            return [
-                'status' => strtolower($data['status'] ?? 'unknown'),
-                'url'    => $info['url'],
-                'desc'   => $info['desc']
-            ];        
+        if ($service_type == "web") {
+            $rendered_backends[] = $target_px;
         }
+
+        return [
+            'status' => strtolower($data['status'] ?? 'unknown'),
+            'url'    => $info['url'],
+            'desc'   => $info['desc']
+        ];        
     }
+    
     return null;
 }
-// Temporary debug:
- print_r(flatten_row($info[3]));
 
+// Example usage:
+// $status = get_backend_info('koscinski', 'web');
