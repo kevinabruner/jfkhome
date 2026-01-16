@@ -2,6 +2,6 @@
   hosts: repo_jfkhome
   become: true
   tasks:                
-    - name: Generate services web page on jfkhome servers (in reverse proxy repo)
+    - name: Generate main services web page 
       include_tasks: "{{ git_dir }}/tasks/generate_site.yaml"
 
