@@ -25,9 +25,9 @@ function get_backend_info($svc_name, $all_stats, $service_type) {
     $target_px = $svc_name . "_backend";
 
     foreach ($all_stats as $row) {
-        // Your existing working flatten logic
         $data = flatten_row($row);
         
+        //checks if the current pxname is our target application and that it's a backend service
         if (
             isset($data['pxname']) && $data['pxname'] === $target_px && 
             isset($data['svname']) && $data['svname'] === 'BACKEND'
@@ -37,7 +37,7 @@ function get_backend_info($svc_name, $all_stats, $service_type) {
                 $rendered_backends[] = $target_px;
             }
 
-            // 2. Return the live status combined with the sidecar info
+            // Return the live status 
             return [
                 'status' => strtolower($data['status'] ?? 'unknown')
             ];        
