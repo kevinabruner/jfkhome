@@ -2,8 +2,9 @@
 $stats_url = "{{ proxy_stats_url }}";
 $stats_json = file_get_contents($stats_url);
 $stats = $stats_json ? json_decode($stats_json, true) : [];
+$meta_raw = @file_get_contents('/var/www/html/services_meta.json');
+$metadata = json_decode($meta_raw, true) ?? [];
 $rendered_backends = [];    
-
 
 // Helper to clean up the nested HAProxy 2.x structure safely
 function flatten_row($row) {
@@ -21,6 +22,11 @@ function flatten_row($row) {
 function get_backend_info($svc_name, $all_stats, $service_type) {    
     global $rendered_backends;    
     $target_px = $svc_name . "_backend";
+
+    $info = $metadata[$target_px] ?? [
+        'url' => '#', 
+        'desc' => 'Service metadata missing'
+    ];
 
     foreach ($all_stats as $row) {
         $data = flatten_row($row);
@@ -41,8 +47,8 @@ function get_backend_info($svc_name, $all_stats, $service_type) {
             //returns the status, if it exists
             return [
                 'status' => strtolower($data['status'] ?? 'unknown'),
-                'url'    => $parts[0] ?? '',
-                'desc'   => $parts[1] ?? ''
+                'url'    => $info['url'],
+                'desc'   => $info['desc']
             ];        
         }
     }
