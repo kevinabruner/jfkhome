@@ -19,25 +19,18 @@ function flatten_row($row) {
 }
 
 // Status checker for backends with service file definitions in the reverse_proxy repo
-function get_backend_info($svc_name, $all_stats, $service_type) {    
+function get_backend_info($svc_name, $all_stats, $service_type) {   
+
     global $rendered_backends, $metadata; // Added $metadata here
     $target_px = $svc_name . "_backend";
-
-    // 1. Pull from the sidecar we built with Ansible
-    $info = $metadata[$target_px] ?? [
-        'url' => '#', 
-        'desc' => 'Service metadata missing'
-    ];
 
     foreach ($all_stats as $row) {
         // Your existing working flatten logic
         $data = flatten_row($row);
         
         if (
-            isset($data['pxname']) && 
-            $data['pxname'] === $target_px && 
-            isset($data['svname']) && 
-            $data['svname'] === 'BACKEND'
+            isset($data['pxname']) && $data['pxname'] === $target_px && 
+            isset($data['svname']) && $data['svname'] === 'BACKEND'
         ) 
         {            
             if ($service_type == "web") {
