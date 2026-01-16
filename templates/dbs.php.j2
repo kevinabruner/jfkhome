@@ -5,7 +5,7 @@ $db_clusters = [
     ['display' => 'PostgreSQL {{ env }}', 'svcname' => 'psql'],];
 
 foreach ($db_clusters as $db):
-    $status = get_backend_info($db['svcname'], $stats, "db");
+    $info = get_backend_info($db['svcname'], $stats, "db");
 ?>
     <div class="service-card db-card">
         <div style="display: flex; align-items: center;">
