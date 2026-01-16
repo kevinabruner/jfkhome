@@ -8,3 +8,10 @@
     mode: "{{ item.mode | default('0644') }}"
   loop: "{{ query('community.general.filetree', git_dir + '/html/') }}"
   when: item.state == 'file'
+
+- name: Symlink services_page.php to index.php
+  ansible.builtin.file:
+    src: /var/www/html/services_page.php
+    dest: /var/www/html/index.php
+    state: link
+    force: yes  
