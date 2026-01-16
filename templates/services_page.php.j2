@@ -20,17 +20,13 @@
         // 1. Loop through our metadata sidecar (the services defined in Ansible)
         foreach ($metadata as $backend_name => $meta): 
             
-            // Extract the short name (e.g., "koscinski" from "koscinski_backend")
+            // Extract the short name and perform the live HAProxy lookup 
             $short_name = str_replace('_backend', '', $backend_name);
-            
-            // 2. Perform the live HAProxy lookup using our existing function
-            // Note: I'm passing $short_name because your function appends '_backend'
             $info = get_backend_info($short_name, $stats, "web"); 
             
             // 3. Only render if HAProxy actually has data for this backend
             if ($info): 
         ?>
-
             <div class="service-card">
                 <div style="display: flex; align-items: center; min-width: 200px;">
                     <span class="status-dot status-<?php echo $info['status']; ?>" 
