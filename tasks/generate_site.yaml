@@ -4,6 +4,7 @@
     dest: "/var/www/html/{{ item.path | regex_replace('\\.j2$', '') }}"
     owner: www-data
     group: www-data
+    force: yes
     mode: "{{ item.mode | default('0644') }}"
   loop: "{{ query('community.general.filetree', git_dir + '/html/') }}"
   when: item.state == 'file'
