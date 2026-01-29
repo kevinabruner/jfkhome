@@ -18,8 +18,7 @@ foreach ($db_clusters as $db):
         <div style="display: flex; align-items: center;">
             <span class="status-dot status-<?php echo $info['status']; ?>"></span>
             <span class="service-name"><?php echo $db['display']; ?></span>
-        </div>
-        <div class="desc">Database Backend: <code><?php echo $db['svc_name']; ?></code></div>
+        </div>        
         <div class="tag tag_internal">Infrastructure</div>
     </div>
 <?php endforeach; ?>
