@@ -1,8 +1,14 @@
 <?php
 // Define the internal svc_names of your database clusters in HAProxy
 $db_clusters = [
-    ['display' => 'MySQL Cluster {{ env }}', 'svc_name' => 'mysql'],
-    ['display' => 'PostgreSQL {{ env }}', 'svc_name' => 'psql'],
+    [
+        'display' => 'MariaDB cluster (Galera) {{ env }}', 
+        'svc_name' => 'mysql'
+    ],
+    [
+        'display' => 'PostgreSQL cluster (Patroni) {{ env }}',
+        'svc_name' => 'psql'
+    ],
 ];
 
 foreach ($db_clusters as $db):
