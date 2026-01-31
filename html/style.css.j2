@@ -2,7 +2,11 @@ body {
     font-family: sans-serif;
     line-height: 1.6;
     padding: 20px;
-    background: url('../images/bg2.png');
+    {% if env == "prod" -%}
+    background: url('../images/bg-external.png');
+    {%- else -%}
+    background: url('../images/bg-internal.png');
+    {%- endif %}
     background-size: cover;
 }
 
