@@ -9,6 +9,15 @@
   loop: "{{ query('community.general.filetree', git_dir + '/html/') }}"
   when: item.state == 'file'
 
+- name: copy images
+  copy:
+    src: "{{ git_dir }}/images"
+    dest: "/var/www/html/images"
+    owner: www-data
+    group: www-data
+    force: yes
+    mode: 644
+
 - name: Symlink services_page.php to index.php
   ansible.builtin.file:
     src: /var/www/html/services_page.php
