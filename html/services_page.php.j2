@@ -14,7 +14,7 @@
 <body>
     <div class="container">
         <h1>TheJFK.ca Service Directory- {{ scope | title }}</h1>
-        <p>Environment: <strong>{{ scope }}</strong> | <small>Live Status: <?php echo empty($stats) ? '⚠️ Offline' : '✅ Connected'; ?></small></p>
+        <p>Environment: <strong>{{ scope }}</strong></p>
         
        <?php 
         // 1. Loop through our metadata sidecar (the services defined in Ansible)
