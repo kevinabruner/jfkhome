@@ -16,7 +16,7 @@
     owner: www-data
     group: www-data
     force: yes
-    mode: 644
+    mode: 775
 
 - name: Symlink services_page.php to index.php
   ansible.builtin.file:
