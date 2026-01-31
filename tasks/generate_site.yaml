@@ -12,7 +12,7 @@
 - name: copy images
   copy:
     src: "{{ git_dir }}/images"
-    dest: "/var/www/html/images"
+    dest: "/var/www/html/"
     owner: www-data
     group: www-data
     force: yes
