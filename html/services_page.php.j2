@@ -33,10 +33,6 @@
                         title="Status: <?php echo strtoupper($info['status']); ?>"></span>
                     <div>
                         <span class="service-name"><?php echo str_replace('_', ' ', $short_name); ?></span>
-                        <br>
-                        <?php if (isset($meta['scope'])): foreach ($meta['scope'] as $s): ?>
-                            <span class="tag tag_<?php echo $s; ?>"><?php echo $s; ?></span>
-                        <?php endforeach; endif; ?>
                     </div>
                 </div>
 
