@@ -127,9 +127,6 @@ hr{
     color: #5a1a1a;
 }
 .legend-box {
-	background: #f4f4f4;
 	padding: 1px 10px;
-	border-radius: 5px;
 	margin-bottom: 15px;
-	box-shadow: 2px 2px 3px #aaa;
 }
