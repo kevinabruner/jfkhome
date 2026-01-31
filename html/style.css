@@ -3,6 +3,7 @@ body {
     line-height: 1.6;
     padding: 20px;
     background: url('../images/bg2.png');
+    background-size: cover;
 }
 
 .container {
