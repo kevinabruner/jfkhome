@@ -21,6 +21,11 @@ variable "ssh_password" {
   default   = null 
 }
 
+variable "env" {
+  type        = string
+  description = "Passed from bake.sh (e.g., dev or prod)"
+}
+
 variable "metadata_path" {
   type        = string
   description = "The local path to the pre-rendered metadata file from the reverse proxy repo."
