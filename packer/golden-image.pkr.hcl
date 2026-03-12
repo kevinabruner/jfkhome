@@ -107,7 +107,7 @@ source "proxmox-iso.jfkhome-base" {
 }
 
 build {
-  sources = ["source.proxmox-iso.jfkhome-base"]
+  sources = ["proxmox-iso.jfkhome-base"]
 
   # Step 1: Run your existing Ansible roles
   provisioner "ansible" {
