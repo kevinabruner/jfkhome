@@ -27,6 +27,19 @@ if [ "$VMID" == "null" ] || [ -z "$VMID" ]; then
     exit 1
 fi
 
+# 3. Render the metadata sidecar
+echo "--- Pre-rendering HAProxy Config for $env ---"
+
+CONFIG_PATH="packer/artifacts/${env}_services_meta.json"
+mkdir -p packer/artifacts
+
+ansible-playbook /home/kevin/reverse-proxy/_packer-metadata.yaml -e "env=$env" 
+
+if [ ! -s "$CONFIG_PATH" ]; then    
+    echo "Error: Generated web metadata is empty!"
+    exit 1
+fi
+
 echo "--- Found VMID: $VMID  ---"
 
 echo "--- Running Pre-flight Checklist ---"
@@ -36,6 +49,7 @@ echo "--- Baking Gold Image for: $app_name ---"
 time packer build \
     -var "target_app=$app_name" \
     -var "proxmox_vmid=$VMID" \
+    -var "metadata_path=$CONFIG_PATH" \
     -var-file="packer/variables.pkrvars.hcl" \
     -var-file="packer/secret.pkrvars.hcl" \
     packer/golden-image.pkr.hcl
