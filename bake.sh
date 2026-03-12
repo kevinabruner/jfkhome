@@ -33,7 +33,7 @@ echo "--- Pre-rendering HAProxy Config for $env ---"
 CONFIG_PATH="packer/artifacts/${env}_services_meta.json"
 mkdir -p packer/artifacts
 
-ansible-playbook /home/kevin/reverse-proxy/_packer-metadata.yaml -e "env=$env" 
+ansible-playbook /home/kevin/reverse-proxy/_packer-metadata.yaml -e "env=$env" -K
 
 if [ ! -s "$CONFIG_PATH" ]; then    
     echo "Error: Generated web metadata is empty!"
