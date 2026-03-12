@@ -1,6 +1,6 @@
 #!/bin/bash
 app_name="jfkhome"
-env="$2"        # 'dev' or 'prod'
+env="$1"        # 'dev' or 'prod'
 
 echo "--- Pulling latest configuration ---"
 git pull || { echo "Git pull failed"; return 1; }
