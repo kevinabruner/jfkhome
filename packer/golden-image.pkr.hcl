@@ -38,7 +38,7 @@ variable "target_app" {
 
 variable "proxmox_api_url" { type = string }
 
-source "proxmox-iso.jfkhome-base" {
+source "proxmox-iso" "jfkhome-base" {
   proxmox_url = var.proxmox_api_url
   vm_id       = var.proxmox_vmid
   username    = "terraform@pam!main_terraform"
