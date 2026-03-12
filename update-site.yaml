@@ -1,7 +1,6 @@
 - name: Build 
   hosts: repo_jfkhome
   become: true
-  tasks:                
-    - name: Generate main services web page 
-      include_tasks: "{{ git_dir }}/tasks/generate_site.yaml"
+  roles:
+    - generate_site
 
