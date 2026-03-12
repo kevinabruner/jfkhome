@@ -36,7 +36,6 @@ echo "--- Baking Gold Image for: $app_name ---"
 time packer build \
     -var "target_app=$app_name" \
     -var "proxmox_vmid=$VMID" \
-    -var "env=$env" \
     -var-file="packer/variables.pkrvars.hcl" \
     -var-file="packer/secret.pkrvars.hcl" \
     packer/golden-image.pkr.hcl
