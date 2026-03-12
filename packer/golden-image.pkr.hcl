@@ -55,7 +55,7 @@ source "proxmox-iso" "jfkhome-base" {
   token       = var.proxmox_api_token_secret
 
   node    = "pve"
-  vm_name = "jfkhome-${env}-golden"
+  vm_name = "jfkhome-${var.env}-golden"
   pool     = "Template"
 
 
