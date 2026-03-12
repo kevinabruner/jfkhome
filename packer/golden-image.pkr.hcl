@@ -45,7 +45,7 @@ source "proxmox-iso" "jfkhome-base" {
   token       = var.proxmox_api_token_secret
 
   node    = "pve"
-  vm_name = "jfkhome-dev-golden"
+  vm_name = "jfkhome-${env}-golden"
   pool     = "Template"
 
 
@@ -120,7 +120,7 @@ build {
     ]
     # Pass target_app variable
     extra_arguments = [
-      "--extra-vars", "target_app=${var.target_app} env=dev"
+      "--extra-vars", "target_app=${var.target_app} env={$var.env}"
     ]
   }
 
