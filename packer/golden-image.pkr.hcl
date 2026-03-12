@@ -130,7 +130,7 @@ build {
     ]
     # Pass target_app variable
     extra_arguments = [
-      "--extra-vars", "target_app=${var.target_app} env={$var.env}"
+      "--extra-vars", "target_app=${var.target_app} env=${var.env}"
     ]
   }
 
