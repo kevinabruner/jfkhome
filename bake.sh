@@ -1,17 +1,26 @@
 #!/bin/bash
 app_name="jfkhome"
+env="$2"        # 'dev' or 'prod'
 
 echo "--- Pulling latest configuration ---"
 git pull || { echo "Git pull failed"; return 1; }
 
-echo "--- Fetching VMID from Inventory ---"
+echo "--- Searching NetBox for $app_name in $env ---"
 
-VMID=$(ansible-inventory --list | jq -r '
-  ._meta.hostvars as $hv |
-  .role_vm_template.hosts[]? | 
-  select($hv[.].custom_fields.repos == "'"$app_name"'" and $hv[.].custom_fields.environment == "dev") | 
-  $hv[.].custom_fields.vmid
+# 1. Fetch the data using a single jq call
+RESULT=$(ansible-inventory --list | jq -r --arg repo "$app_name" --arg env "$env" '
+  ._meta.hostvars | to_entries[] | 
+  select(
+    .value.custom_fields.repos == $repo and 
+    .value.custom_fields.environment == $env and 
+    (.value.device_roles | contains(["vm-template"]))
+  ) | 
+  "\(.key) \(.value.custom_fields.vmid)"
 ')
+
+# 2. Parse the result
+INVENTORY_HOSTNAME=$(echo $RESULT | awk '{print $1}')
+VMID=$(echo $RESULT | awk '{print $2}')
 
 if [ "$VMID" == "null" ] || [ -z "$VMID" ]; then
     echo "Error: Could not find VMID for $app_name in inventory."
@@ -27,6 +36,7 @@ echo "--- Baking Gold Image for: $app_name ---"
 time packer build \
     -var "target_app=$app_name" \
     -var "proxmox_vmid=$VMID" \
+    -var "env=$env" \
     -var-file="packer/variables.pkrvars.hcl" \
     -var-file="packer/secret.pkrvars.hcl" \
     packer/golden-image.pkr.hcl
