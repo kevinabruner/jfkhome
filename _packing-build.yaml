@@ -1,0 +1,6 @@
+- name: Build 
+  hosts: all
+  become: true
+  roles:
+    - first_install
+    - generate_site
