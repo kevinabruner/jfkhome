@@ -95,6 +95,10 @@ build {
       "ANSIBLE_ROLES_PATH=./roles",
       "ANSIBLE_HOST_KEY_CHECKING=False"
     ]
+    # Pass target_app variable
+    extra_arguments = [
+      "--extra-vars", "env=${var.env}"
+    ]
   }
 
   # Upload the pre-rendered metadata file
