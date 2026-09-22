@@ -78,7 +78,7 @@ source "proxmox-clone" "jfkhome-base" {
 build {
   sources = ["proxmox-clone.jfkhome-base"]
 
-  # 0: Move disk to local-zfs from NAS
+  # Move disk to local-zfs from NAS
   provisioner "shell-local" {
     inline = [
       "ssh root@pve 'qm move_disk ${var.proxmox_vmid} scsi0 local-zfs --delete'"
@@ -129,7 +129,7 @@ build {
       "sudo sync"
     ]
   }
-  
+
   post-processor "shell-local" {
     inline = [
       # copy the disk from local-zfs to NAS (nfs)
