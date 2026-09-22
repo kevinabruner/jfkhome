@@ -43,11 +43,10 @@ fi
 echo "--- Found VMID: $VMID  ---"
 
 echo "--- Running Pre-flight Checklist ---"
-ansible-playbook _packer-preflight.yaml -e "vmid=$VMID" -e "target_app=$app_name" -e "env=${env}" -K
+ansible-playbook _packer-preflight.yaml -e "vmid=$VMID" -e "env=${env}" -K
 
 echo "--- Baking Gold Image for: $app_name in ${env} ---"
 time packer build \
-    -var "target_app=$app_name" \
     -var "proxmox_vmid=$VMID" \
     -var "env=${env}" \
     -var "metadata_path=$CONFIG_PATH" \
