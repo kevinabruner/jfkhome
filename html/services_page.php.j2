@@ -39,8 +39,8 @@
                 <div class="desc">
                     <?php echo htmlspecialchars($meta['desc']); 
                     if ($meta['cache'] == 1): 
-                    ?>
-                    This site is cached through Varnish.
+                    ?><p>This site is cached through Varnish.
+                     <span class="status-dot status-<?php echo $info['status']; ?>"></span></p>
                     <?php endif; ?>
                 </div>
 
