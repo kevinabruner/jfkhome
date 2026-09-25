@@ -1,5 +1,5 @@
 - name: Build 
-  hosts: repo_jfkhome
+  hosts: repo_jfkhome:!role_vm_template
   become: true
   roles:
     - generate_site
