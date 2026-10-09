@@ -107,7 +107,7 @@ build {
   provisioner "shell-local" {
     inline = [
       "echo 'Pushing ${var.metadata_source_path} to ${var.metadata_dest_path}...'",
-      "ssh root@pve \"pct exec ${var.proxmox_vmid} -- mkdir -p /etc/varnish\"",
+      "ssh root@pve \"pct exec ${var.proxmox_vmid} -- mkdir -p ${dirname(var.metadata_dest_path)}\"",
       "cat ${var.metadata_source_path} | ssh root@pve \"pct exec ${var.proxmox_vmid} -- sh -c 'cat > ${var.metadata_dest_path}'\"",
       "ssh root@pve \"pct exec ${var.proxmox_vmid} -- chown root:root ${var.metadata_dest_path}\"",
       "ssh root@pve \"pct exec ${var.proxmox_vmid} -- chmod 644 ${var.metadata_dest_path}\"",
