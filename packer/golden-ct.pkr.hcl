@@ -16,6 +16,11 @@ variable "proxmox_vmid" {
   description = "Temporary VMID used to build the LXC container."
 }
 
+variable "env" {
+  type        = string
+  description = "Passed from bake.sh (e.g., dev or prod)"
+}
+
 variable "metadata_source_path" {
   type        = string
   description = "The local path to the pre-rendered metadata file from the reverse proxy repo."
