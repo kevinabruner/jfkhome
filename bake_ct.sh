@@ -47,6 +47,7 @@ time packer build \
     -var "metadata_source_path=$CONFIG_SRC_PATH" \
     -var "metadata_dest_path=$CONFIG_SRC_PATH" \
     -var "os_template=$OS_TEMPLATE" \
+    -var "env=${env}" \
     -var "output_template_name"=$OUTPUT \
     -var-file="packer/variables.pkrvars.hcl" \
     packer/golden-ct.pkr.hcl
