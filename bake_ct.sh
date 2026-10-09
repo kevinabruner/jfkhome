@@ -8,6 +8,12 @@ PLAYBOOK="_packer-build.yaml"
 CONFIG_SRC_PATH="packer/artifacts/${env}_services_meta.json"
 CONFIG_DEST_PATH="/var/www/html/services_meta.json"
 
+set -euo pipefail
+
+if [[ -z "$env" ]]; then
+    echo "Must provide \"dev\" or \"prod\" as arg"
+fi
+
 # Clean up old temp VM, if it exists
 ssh root@pve "pct status $VMID >/dev/null 2>&1 && pct destroy $VMID --purge --force" || true
 
