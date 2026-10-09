@@ -34,11 +34,10 @@ if [ ! -s "$CONFIG_SRC_PATH" ]; then
     exit 1
 fi
 
-echo "--- Baking golden container templ te for: $app_name ---"
+echo "--- Baking golden container template for: $app_name ---"
 time packer build \
     -var "proxmox_vmid=$VMID" \
     -var "playbook_file"=$PLAYBOOK \
-    -var "env=${env}" \
     -var "metadata_source_path=$CONFIG_SRC_PATH" \
     -var "metadata_dest_path=$CONFIG_SRC_PATH" \
     -var "os_template=$OS_TEMPLATE" \
