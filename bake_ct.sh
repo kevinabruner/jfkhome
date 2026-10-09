@@ -45,7 +45,7 @@ time packer build \
     -var "proxmox_vmid=$VMID" \
     -var "playbook_file"=$PLAYBOOK \
     -var "metadata_source_path=$CONFIG_SRC_PATH" \
-    -var "metadata_dest_path=$CONFIG_SRC_PATH" \
+    -var "metadata_dest_path=$CONFIG_DEST_PATH" \
     -var "os_template=$OS_TEMPLATE" \
     -var "env=${env}" \
     -var "output_template_name"=$OUTPUT \
