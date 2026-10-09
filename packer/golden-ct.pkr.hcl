@@ -94,16 +94,16 @@ build {
       "echo 'Waiting for container SSH daemon...'",
       "until ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa root@$CT_IP 'echo ssh-ready'; do sleep 2; done",
 
-      "ANSIBLE_FORCE_COLOR=1 DEBIAN_FRONTEND=noninteractive ansible-playbook -i \"$CT_IP,\" -u root --private-key=~/.ssh/id_rsa --extra-vars \"metadata_path=${var.metadata_path}\" ${var.playbook_file}"  
+      "ANSIBLE_FORCE_COLOR=1 DEBIAN_FRONTEND=noninteractive ansible-playbook -i \"$CT_IP,\" -u root --private-key=~/.ssh/id_rsa --extra-vars \"metadata_path=${var.metadata_source_path}\" ${var.playbook_file}"  
     ]
   }
 
 # Push local VCL file directly into the LXC container via SSH pipe
   provisioner "shell-local" {
     inline = [
-      "echo 'Pushing ${var.metadata_path} to ${var.metadata_dest_path}...'",
+      "echo 'Pushing ${var.metadata_source_path} to ${var.metadata_dest_path}...'",
       "ssh root@pve \"pct exec ${var.proxmox_vmid} -- mkdir -p /etc/varnish\"",
-      "cat ${var.metadata_path} | ssh root@pve \"pct exec ${var.proxmox_vmid} -- sh -c 'cat > ${var.metadata_dest_path}'\"",
+      "cat ${var.metadata_source_path} | ssh root@pve \"pct exec ${var.proxmox_vmid} -- sh -c 'cat > ${var.metadata_dest_path}'\"",
       "ssh root@pve \"pct exec ${var.proxmox_vmid} -- chown root:root ${var.metadata_dest_path}\"",
       "ssh root@pve \"pct exec ${var.proxmox_vmid} -- chmod 644 ${var.metadata_dest_path}\"",
 
