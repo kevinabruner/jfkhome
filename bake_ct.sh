@@ -18,7 +18,7 @@ fi
 ssh root@pve "pct status $VMID >/dev/null 2>&1 && pct destroy $VMID --purge --force" || true
 
 # Load and export variables from /etc/environment
-source /etc/environment
+#source /etc/environment
 
 echo "--- Doing a git pull because you probably forgot to ---"
 git pull || { echo "Git pull failed"; exit 1; }
