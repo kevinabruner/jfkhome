@@ -103,7 +103,7 @@ build {
     ]
   }
 
-# Push local VCL file directly into the LXC container via SSH pipe
+# Push local metadata file directly into the LXC container via SSH pipe
   provisioner "shell-local" {
     inline = [
       "echo 'Pushing ${var.metadata_source_path} to ${var.metadata_dest_path}...'",
@@ -111,9 +111,6 @@ build {
       "cat ${var.metadata_source_path} | ssh root@pve \"pct exec ${var.proxmox_vmid} -- sh -c 'cat > ${var.metadata_dest_path}'\"",
       "ssh root@pve \"pct exec ${var.proxmox_vmid} -- chown root:root ${var.metadata_dest_path}\"",
       "ssh root@pve \"pct exec ${var.proxmox_vmid} -- chmod 644 ${var.metadata_dest_path}\"",
-
-      "echo 'Validating VCL syntax inside container...'",
-      "ssh root@pve \"pct exec ${var.proxmox_vmid} -- varnishd -C -f ${var.metadata_dest_path}\""
     ]
   }
 
